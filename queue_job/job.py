@@ -561,7 +561,11 @@ class Job(object):
 
         db_record = self.db_record()
         if db_record:
-            db_record.with_context(_job_edit_sentinel=edit_sentinel).write(vals)
+            uid = self.env.context.get('uid')
+            db_record = db_record.with_context(_job_edit_sentinel=edit_sentinel)
+            if uid:
+                db_record = db_record.with_user(uid)
+            db_record.write(vals)
         else:
             date_created = self.date_created
             # The following values must never be modified after the
